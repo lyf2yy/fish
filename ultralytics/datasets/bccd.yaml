@@ -1,0 +1,25 @@
+# datasets
+# ├── images
+#       └── trains
+#       ├     └── img1.png
+#       ├── val
+#             └── img1.png
+# ├── labels
+#       └── trains
+#       ├     └── gt1.txt
+#       ├── val
+#             └── gt1.txt
+
+
+# txt格式: x和y分别用原图的宽高归一化
+# label1 c_x1 y_c1 w1 h1
+# label2 c_x2 y_c2 w2 h2
+
+
+path: F:\pr_tmp\ultralytics_fish\data  # dataset root dir    #dataset目录
+train: images\train  # 会自动将images替换为labels    #train数据及images目录
+val: images\val #    #val数据及images目录
+
+
+names:
+    0: 'fish'

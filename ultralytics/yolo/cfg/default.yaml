@@ -1,0 +1,147 @@
+# Ultralytics YOLO 🚀, GPL-3.0 license
+# Default training settings and hyperparameters for medium-augmentation COCO training
+
+task: detect  # inference task, i.e. detect, segment, classify
+# mode: train  # YOLO mode, i.e. train, val, predict, export   # 需要修改， 训练模式
+mode: predict  # YOLO mode, i.e. train, val, predict, export   # 需要修改， 预测模式
+
+# Train settings -------------------------------------------------------------------------------------------------------
+# model:  F:\pr_tmp\ultralytics_fish\ultralytics\yolo\v8\detect\yolov8n.pt # 需要修改 使用预训练模型
+# model:  yolov8n.yaml #  # 需要指定   不使用预训练模型
+model:  F:\pr_tmp\ultralytics_fish\ultralytics\yolo\v8\detect\bccd\04137\weights\best.pt # 训练中最佳的模型权重
+
+data:  bccd.yaml # path to data file, i.e. i.e. coco128.yaml   # 需要指定
+
+center_box: True #标注box坐标xywh，xy是否是box中心(还是左上角坐标)，支持两种格式
+
+updateBN: False #稀疏化BN的gamma参数
+pruneTrain: False #剪枝后初次微调c
+
+epochs: 50  # number of epochs to train for
+patience: 10  # epochs to wait for no observable improvement for early stopping of training
+batch: 1 # number of images per batch (-1 for AutoBatch)  
+imgsz: 960 # size of input images as integer or w,h, list or int
+save: True  # save train checkpoints and predict results
+save_period: 1 # Save checkpoint every x epochs (disabled if < 1)
+cache: False  # True/ram, disk or False. Use cache for data loading
+device: 0 # device to run on, i.e. cuda device=0 or device=0,1,2,3 or device=cpu
+workers: 0  # number of worker threads for data loading (per RANK if DDP)
+
+project:  "bccd" # project name   # 需要指定
+name:  "0413" # experiment name   # 需要指定
+
+all_classes: [] #需要检测哪些类别 [0, 2, 3]. 为空默认检测全部类别
+
+single_channel: False #是否输入灰度图,  # 需要指定 是否是灰度图像
+
+exist_ok: False  # whether to overwrite existing experiment，log文件是否覆盖，否则创建新的文件
+pretrained: False  # whether to use a pretrained model #
+
+optimizer: SGD  # optimizer to use, choices=['SGD', 'Adam', 'AdamW', 'RMSProp']
+verbose: True  # whether to print verbose output
+seed: 0  # random seed for reproducibility
+deterministic: False  # whether to enable deterministic mode
+
+single_cls: False  # train multi-class data as single-class,所有的类都作为前景类，只看是否检测出来，不看分类
+image_weights: True  # use weighted image selection for training #效果不好的图片下一epoch中提高权重
+rect: True  # support rectangular training if mode='train' #为False会把图片padding为正方形，为True时只会padding为32的倍数，节省计算量
+cos_lr: True  # use cosine learning rate scheduler 余弦衰减
+cos_step: 20  # use cosine learning rate scheduler 余弦衰减
+close_mosaic: 10  # disable mosaic augmentation for final 10 epochs #最后10个epoch关闭mosaic增强
+resume: False  # resume training from last checkpoint #使用last.pt 接着训练
+min_memory: False  # minimize memory footprint loss function, choices=[False, True, <roll_out_thr>]
+# Segmentation
+overlap_mask: True  # masks should overlap during training (segment train only)
+mask_ratio: 4  # mask downsample ratio (segment train only)
+# Classification
+dropout: 0.0  # use dropout regularization (classify train only)
+
+
+# Val/Test settings ----------------------------------------------------------------------------------------------------
+val: True  # validate/test during training
+split: val  # dataset split to use for validation, i.e. 'val', 'test' or 'train'
+save_json: False  # save results to JSON file
+save_hybrid: False  # save hybrid version of labels (labels + additional predictions)
+conf:   # object confidence threshold for detection (default 0.25 predict, 0.001 val)
+iou: 0.3  # intersection over union (IoU) threshold for NMS
+max_det: 100  # maximum number of detections per image
+half: False  # use half precision (FP16)
+dnn: False  # use OpenCV DNN for ONNX inference
+plots: True  # save plots during train/val
+
+# Prediction settings --------------------------------------------------------------------------------------------------
+# source: /home/lead/data/Conv_light/allimgs # source directory for images or videos
+source: F:\pr_tmp\ultralytics_fish\data\images\val # source directory for images or videos 需要预测图片的路径     # 需要指定
+show: False  # show results if possible
+save_txt: True  # save results as .txt file #是否保存txt
+save_conf: True  # save results with confidence scores#保存置信度到txt
+save_crop: False  # save cropped images with results 将patch按照类别存储
+hide_labels: False  # hide labels# 图片中不显示label和置信度
+hide_conf: False  # hide confidence scores #图片中不显示置信度分数
+vid_stride: 1  # video frame-rate stride #视频的帧率
+line_thickness: 3  # bounding box thickness (pixels) #框的像素值
+visualize: False  # visualize model features #可视化
+augment: False  # apply image augmentation to prediction sources 预测时数据增强
+agnostic_nms: False  # class-agnostic NMS #类间NMS,是否要通过iou抑制不同类别的box, 为True时不区分类别
+classes:  #  class=0, or class=[0,2,3] 预测时候只预测classes类别，忽略其他类别
+retina_masks: False  # use high-resolution segmentation masks 分割任务
+boxes: True  # Show boxes in segmentation predictions 分割任务
+
+# Export settings ------------------------------------------------------------------------------------------------------
+format: torchscript  # format to export to #导出格式 是torchscripts
+keras: False  # use Keras #
+optimize: False  # TorchScript: optimize for mobile #
+int8: False  # CoreML/TF INT8 quantization #量化为int8
+dynamic: False  # ONNX/TF/TensorRT: dynamic axes #动态输入
+simplify: True  # ONNX: simplify model #是否简化onnx结构
+opset: 11 # ONNX: opset version (optional)# 默认版本
+workspace: 4  # TensorRT: workspace size (GB)
+nms: False  # CoreML: add NMS
+
+# Hyperparameters ------------------------------------------------------------------------------------------------------
+lr0: 0.01  # initial learning rate (i.e. SGD=1E-2, Adam=1E-3)
+lrf: 0.01  # final learning rate (lr0 * lrf)
+momentum: 0.937  # SGD momentum/Adam beta1
+weight_decay: 0.0005  # optimizer weight decay 5e-4
+warmup_epochs: 3.0  # warmup epochs (fractions ok)
+warmup_momentum: 0.8  # warmup initial momentum
+warmup_bias_lr: 0.1  # warmup initial bias lr
+box: 7.5  # box loss gain
+cls: 10  # cls loss gain (scale with pixels)
+dfl: 1.5  # dfl loss gain
+topk: 10
+# dfl: 3.0  # dfl loss gain
+fl_gamma: 0.0  # focal loss gamma  0-1.0
+label_smoothing: 0  # label smoothing (fraction)
+nbs: 64  # nominal batch size
+hsv_h: 0.015  # image HSV-Hue augmentation (fraction)
+hsv_s: 0.7  # image HSV-Saturation augmentation (fraction)
+hsv_v: 0.4  # image HSV-Value augmentation (fraction)
+degrees: 0.0  # image rotation (+/- deg) #0-180角度
+translate: 0.0  # image translation (+/- fraction)
+scale: 0.0  # image scale (+/- gain)
+shear: 0.0  # image shear (+/- deg)#0-180角度
+perspective: 0.0  # image perspective (+/- fraction), range 0-0.001
+flipud: 0.0  # image flip up-down (probability)
+fliplr: 0.0  # image flip left-right (probability)
+Lumenchance: 0.0  # 随机概率伽马变换修改灰度值
+HeightCrop: 0.0 #随机裁剪高度，增加图像的宽高比多样性
+mosaic: 1.0  # image mosaic (probability)
+# mosaic: 0.0  # image mosaic (probability)
+mixup: 0.0  # image mixup (probability)
+copy_paste: 0.0  # segment copy-paste (probability)
+
+Noisemean: 0.0 #高斯噪声参数
+Noisevariance: 1.0
+Noiseamplitude: 10.0
+Noisep: 0.0
+
+
+# Custom config.yaml ---------------------------------------------------------------------------------------------------
+cfg:  # for overriding defaults.yaml
+
+# Debug, do not modify -------------------------------------------------------------------------------------------------
+v5loader: False  # use legacy YOLOv5 dataloader
+
+# Tracker settings ------------------------------------------------------------------------------------------------------
+tracker: botsort.yaml  # tracker type, ['botsort.yaml', 'bytetrack.yaml']
